@@ -2,11 +2,12 @@ from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 from pymongo import MongoClient
 from hashlib import sha256
+import json
 
 app = Flask(__name__)
 api = Api(app)
 
-client = MongoClient("mongodb://db:27017")
+client = MongoClient('mongodb://localhost:27017')
 db = client['urlDB']
 urlMap = db['urlMap']
 
@@ -38,7 +39,8 @@ class getShortUrl(Resource):
             
             # unique url generated
             # make database entry
-            if(not arr):    
+            res = [i for i in arr]
+            if(not res):    
                 urlMap.insert({
                     "_id": shortUrl,
                     "longUrl": longUrl
@@ -47,9 +49,6 @@ class getShortUrl(Resource):
                     'shortUrl': shortUrl,
                     'status': 200
                 })
-            else:
-                
-                return jsonify(arr)
 
 class getLongUrl(Resource):
     def get(self):
@@ -75,7 +74,7 @@ class getLongUrl(Resource):
 api.add_resource(getShortUrl, "/getShortUrl")
 api.add_resource(getLongUrl, "/getLongUrl")
 if(__name__ == "__main__"):
-    app.run(host = '0.0.0.0')
+    app.run()
 
 
 
